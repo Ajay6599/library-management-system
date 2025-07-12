@@ -1,0 +1,7 @@
+.btnContainer > div >  button {
+    /* border: 1px solid red; */
+    width: 200px;
+}
+.btnContainer > div > button p {
+    font-size: medium;
+}

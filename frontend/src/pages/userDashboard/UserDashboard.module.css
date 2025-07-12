@@ -1,0 +1,16 @@
+.dashboardBtns > button {
+    /* border: 1px solid red; */
+    width: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dashboardBtns > button div {
+    border: 1px solid green;
+    border-radius: 6px;
+    padding: 0.5rem;
+    left: 0;
+}
+.dashboardBtns > button p {
+    font-size: large;
+}

@@ -1,0 +1,11 @@
+.btnContainer > button {
+    /* border: 1px solid salmon; */
+    padding: 0 1rem;
+}
+.btnContainer > button:first-child {
+    background-color: #dcdcdc;
+}
+.btnContainer > button:last-child {
+    background-color: #000;
+    color: #fff;
+}

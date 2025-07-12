@@ -1,0 +1,33 @@
+.btnContainer button {
+    border: 1px solid white;
+    width: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: none;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+}
+
+.btnContainer button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.btnContainer button div {
+    transform: translateX(-58px);
+    transition: all 0.5s ease-in-out;
+}
+
+.btnContainer button:hover div {
+    transform: translateX(-36px);
+}
+
+.btnContainer button p {
+    font-weight: 500;
+    transition: all 0.5s ease-in-out;
+}
+
+.btnContainer button:hover p {
+    transform: translateX(10px);
+}

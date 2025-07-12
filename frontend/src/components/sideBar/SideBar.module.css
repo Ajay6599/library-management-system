@@ -1,0 +1,33 @@
+.btnsContainer button {
+    /* border: 1px solid teal; */
+    border-radius: 0px;
+    width: 204px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background: transparent;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+}
+.btnsContainer button:hover {
+    border-radius: 20px;
+    border-right: none;
+    background: linear-gradient(to left, #5B35A4, #3778CC);
+}
+.btnsContainer button div {
+    transform: translateX(-20px);
+    transition: transform 0.5s ease-in-out;
+}
+.btnsContainer button:hover div {
+    transform: translateX(6px);
+}
+.btnsContainer button p {
+    /* border: 1px solid salmon; */
+    font-size: 18px;
+    font-weight: 400;
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out;
+}
+.btnsContainer button:hover p {
+    transform: translateX(28px);
+}

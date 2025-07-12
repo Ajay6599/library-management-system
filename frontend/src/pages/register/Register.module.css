@@ -1,0 +1,19 @@
+.signUpBtn > button {
+    border: 1px solid transparent;
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    transition: all 0.5s ease-in-out;
+}
+.signUpBtn > button:hover {
+    border: 1px solid #000;
+    background-color: #fff;
+    color: #000;
+}
+
+.eyeBtn button {
+    /* border: 1px solid green; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

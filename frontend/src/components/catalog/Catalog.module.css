@@ -1,0 +1,19 @@
+.btnContainer > div > button {
+    /* border: 1px solid teal; */
+    /* padding: 0 0.75rem; */
+    width: 200px;
+}
+/* .btnContainer > div > button:first-child { */
+    /* background-color: #000; */
+    /* color: #fff;
+}
+.btnContainer > div  button:last-child {
+    background-color: #e8e8e8;
+} */
+
+.catalogBtnHandler > button {
+    /* border: 1px solid green; */
+    display: flex;
+    /* width: 14px; */
+    height: 16px;
+}
