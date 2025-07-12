@@ -73,4 +73,4 @@ Feel free to reach out!
 Email: ajayprajapati6599@gmail.com
 LinkedIn: https://linkedin.com/in/ajayprajapati6599
 
-**Thank you for visiting!**
+**Thank you for checking out my Library Management System!**
