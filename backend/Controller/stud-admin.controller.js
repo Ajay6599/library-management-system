@@ -9,7 +9,7 @@ const studAdminController = {
 
         try {
             if (password === confirmPassword) {
-                bcrypt.hash(password, 7, async (err, hash) => {
+                bcrypt.hash(password, 10, async (err, hash) => {
                     if (err) {
                         return res.status(200).send({ msg: "Could't hash the password", Error: err });
                     } else {
@@ -61,7 +61,7 @@ const studAdminController = {
                 })
             }
         } catch (error) {
-            return res.status(500).send({msg: " Server Error: ", error: error.message});
+            return res.status(500).send({ msg: " Server Error: ", error: error.message });
         }
     },
     getAllStudents: async (req, res) => {
@@ -76,22 +76,43 @@ const studAdminController = {
     },
     getById: async (req, res) => {
         const { id } = req.params;
-        
+
         try {
             const getUser = await studAdminModel.findById(id);
-            return getUser.role === 'Admin' ? res.status(403).send({msg: "Invalid user id, Please enter the valid user id"}) : res.status(200).send({user: getUser});
+            return getUser.role === 'Admin' ? res.status(403).send({ msg: "Invalid user id, Please enter the valid user id" }) : res.status(200).send({ user: getUser });
         } catch (error) {
-            return res.status(400).send({ msg: "Something Went Wrong while fetching the User", Error: error});
+            return res.status(400).send({ msg: "Something Went Wrong while fetching the User", Error: error });
         }
     },
     updateById: async (req, res) => {
         const { id } = req.params;
+        const { name, gender, phoneNumber, email, password, confirmPassword } = req.body;
 
         try {
             // const getUser = await studAdminModel.findByIdAndUpdate(id);
             // getUser.role === 'Admin' && getUser._id === id ? : ;
-            await studAdminModel.findByIdAndUpdate(id, req.body);
-            return res.status(200).send({msg: "User details has updated successfully"});
+            // Check if user exists
+            const user = await studAdminModel.findById(id);
+            if (!user) {
+                return res.status(404).send({ msg: "User not found" });
+            }
+
+            // Password update handling
+            let updatedFields = { name, gender, phoneNumber, email };
+
+            if (password || confirmPassword) {
+                if (password !== confirmPassword) {
+                    return res.status(400).send({ msg: "Passwords do not match" });
+                }
+                const hashedPassword = await bcrypt.hash(password, 10);
+                updatedFields.password = hashedPassword;
+            }
+
+            await studAdminModel.findByIdAndUpdate(id, updatedFields, { new: true });
+
+            return res.status(200).send({ msg: "User details have been updated successfully" });
+            // await studAdminModel.findByIdAndUpdate(id, req.body);
+            // return res.status(200).send({ msg: "User details has updated successfully" });
         } catch (error) {
             return res.status(400).send({ msg: "Something Went Wrong while deleting the User", err: error });
         }
@@ -109,14 +130,14 @@ const studAdminController = {
         const token = req.headers.authorization.split(" ")[1];
 
         try {
-            if(blacklists.includes(token)) {
-                return res.status(200).send({msg: "You're already logged out."});
+            if (blacklists.includes(token)) {
+                return res.status(200).send({ msg: "You're already logged out." });
             }
             blacklists.push(token);
             console.log("Logged out successfully");
-            return res.status(200).send({msg: "Logged out successfully"});
+            return res.status(200).send({ msg: "Logged out successfully" });
         } catch (error) {
-            return res.status(400).send({msg:"Something Went Wrong While Logging out", error:error});
+            return res.status(400).send({ msg: "Something Went Wrong While Logging out", error: error });
         }
     }
 };
