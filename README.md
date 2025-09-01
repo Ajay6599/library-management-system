@@ -64,7 +64,7 @@ A full-stack Library Management System built with the MERN stack (MongoDB, Expre
 
 ## Live Demo
 
-Check out the live version here: https://ajay-portfolio-personal.netlify.app/
+Check out the live version here: https://bookverselibrary.netlify.app
 
 ## Contact
 
@@ -73,4 +73,4 @@ Feel free to reach out!
 Email: ajayprajapati6599@gmail.com
 LinkedIn: https://linkedin.com/in/ajayprajapati6599
 
-**Thank you for visiting my portfolio!**
+**Thank you for checking out my Library Management System!**
