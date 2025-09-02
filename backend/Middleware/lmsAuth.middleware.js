@@ -33,6 +33,7 @@ let lmsAuthMiddleware = {
     },
     authR: (roles) => {
         return (req, res, next) => {
+            console.log(req.userAuth.role);
             if (roles.includes(req.userAuth.role)) {
                 next();
             } else {
