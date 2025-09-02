@@ -17,16 +17,10 @@ let lmsAuthMiddleware = {
                 return res.status(401).send({ msg: "You're logged out, Please login" });
             };
 
-            jwt.verify(token, "libManSys", (err, decoded) => {
+            let decoded = jwt.verify(token, "libManSys");
 
-                if (err) {
-                    return res.status(401).send({ msg: "Invalid token" });
-                };
-
-                console.log(decoded);
-                req.userAuth = decoded;
-                next();
-            })
+            req.userAuth = decoded;
+            next();
         } catch (error) {
             return res.status(400).send({ msg: "Something went wrong while varifying the token", error: error });
         }
