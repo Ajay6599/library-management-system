@@ -86,7 +86,7 @@ const studAdminController = {
     },
     updateById: async (req, res) => {
         const targetUserId = req.params.id;
-        const loggedInUser = req.user;
+        const loggedInUser = req.userAuth;
         const { name, gender, phoneNumber, email, password, confirmPassword, role } = req.body;
 
         try {

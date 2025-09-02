@@ -1,6 +1,6 @@
 // Middleware/canEditOrDeleteUser.js
 const canEditOrDeleteUser = (req, res, next) => {
-    const loggedInUser = req.user;
+    const loggedInUser = req.userAuth;
     const targetUserId = req.params.id;
 
     if (loggedInUser.role === 'Admin') {
