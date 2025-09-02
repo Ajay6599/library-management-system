@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { studAdminModel } = require('../Model/stud-admin.model');
 const { blacklists } = require('../blacklists');
+const mongoose = require('mongoose');
 
 const studAdminController = {
     register: (req, res) => {
