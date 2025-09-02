@@ -49,7 +49,7 @@ const studAdminController = {
 
                     if (result) {
 
-                        let token = jwt.sign({ id: loginUser._id, email: loginUser.email, role: loginUser.role, borrowedBooks: loginUser.borrowedBooks }, "libManSys", { expiresIn: "1h" });
+                        let token = jwt.sign({ id: loginUser._id.toString(), email: loginUser.email, role: loginUser.role, borrowedBooks: loginUser.borrowedBooks }, "libManSys", { expiresIn: "1h" });
 
                         return res.status(200).send({ msg: "Logged in successfully.", authToken: token, id: loginUser._id, name: loginUser.name, phoneNo: loginUser.phoneNumber, gender: loginUser.gender, email: loginUser.email, role: loginUser.role });
 
