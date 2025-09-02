@@ -117,6 +117,9 @@ const studAdminController = {
         const { name, phoneNumber, email, password, confirmPassword } = req.body;
 
         try {
+            if (!mongoose.Types.ObjectId.isValid(loggedInUser._id)) {
+                return res.status(400).send({ msg: "Invalid User ID format in token" });
+            }
             const userToUpdate = await studAdminModel.findById(loggedInUser._id);
             if (!userToUpdate) {
                 return res.status(404).send({ msg: "User not found" });
