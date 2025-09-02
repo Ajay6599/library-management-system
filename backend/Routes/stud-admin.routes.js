@@ -12,8 +12,8 @@ userRouter.post('/login', studAdminController.login);
 userRouter.get('/', authT, authR(['Admin']), studAdminController.getAllStudents);
 userRouter.get('/:id', authT, authR(['Admin']), studAdminController.getById);
 
-userRouter.put('/:id', authT, authR(['Admin', 'Student']), studAdminController.updateByAdmin);
-userRouter.put('/me', authT, authR(['Admin']), studAdminController.updateBySelf);
+userRouter.put('/:id', authT, authR(['Admin']), studAdminController.updateByAdmin);
+userRouter.put('/me', authT, authR(['Admin', 'Student']), studAdminController.updateBySelf);
 
 userRouter.delete('/:id', authT, authR(['Admin', 'Student']), studAdminController.deleteById);
 
