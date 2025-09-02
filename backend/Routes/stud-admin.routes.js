@@ -1,8 +1,10 @@
 const express = require('express');
-const { authT, authR } = require('../Middleware/lmsAuth.middleware');
+const { lmsAuthMiddleware } = require('../Middleware/lmsAuth.middleware');
 const { studAdminController } = require('../Controller/stud-admin.controller');
 
 const userRouter = express.Router();
+
+const { authT, authR } = lmsAuthMiddleware;
 
 userRouter.post('/register', studAdminController.register);
 userRouter.post('/login', studAdminController.login);
