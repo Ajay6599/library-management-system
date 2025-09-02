@@ -113,6 +113,7 @@ const studAdminController = {
     },
     updateBySelf: async (req, res) => {
         const loggedInUser = req.userAuth;
+        console.log(loggedInUser._id);
         const { name, phoneNumber, email, password, confirmPassword } = req.body;
 
         try {
