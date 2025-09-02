@@ -84,40 +84,56 @@ const studAdminController = {
             return res.status(400).send({ msg: "Something Went Wrong while fetching the User", Error: error });
         }
     },
-    updateById: async (req, res) => {
+    updateByAdmin: async (req, res) => {
         const targetUserId = req.params.id;
         const loggedInUser = req.userAuth;
-        const { name, gender, phoneNumber, email, password, confirmPassword, role } = req.body;
+        const { role } = req.body;
 
         try {
+            if (loggedInUser.role !== 'Admin') {
+                return res.status(403).json({ msg: 'Access denied: Only admins can update roles' });
+            }
             const userToUpdate = await studAdminModel.findById(targetUserId);
             if (!userToUpdate) {
                 return res.status(404).send({ msg: "User not found" });
             }
 
-            // If admin, allow only role update
-            if (loggedInUser.role === 'Admin') {
-                if (role) {
-                    userToUpdate.role = role;
-                    await userToUpdate.save();
-                    return res.status(200).json({ msg: 'User role updated by admin' });
-                } else {
-                    return res.status(400).json({ msg: 'No role provided to update' });
-                }
+            if (!role) {
+                return res.status(400).json({ msg: 'No role provided to update' });
             }
 
-            // If student, only allow self-update
-            if (loggedInUser._id.toString() !== targetUserId) {
-                return res.status(403).json({ msg: "You are not authorized to update this user" });
+            userToUpdate.role = role;
+            await userToUpdate.save();
+
+            return res.status(200).json({ msg: 'User role updated by admin successfully' });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ msg: "Something went wrong", err: error.message });
+        }
+    },
+    updateBySelf: async (req, res) => {
+        const loggedInUser = req.userAuth;
+        const { name, phoneNumber, email, password, confirmPassword } = req.body;
+
+        try {
+            const userToUpdate = await studAdminModel.findById(loggedInUser._id);
+            if (!userToUpdate) {
+                return res.status(404).send({ msg: "User not found" });
             }
 
             // Update personal details
             if (name) userToUpdate.name = name;
-            if (gender) userToUpdate.gender = gender;
+            // if (gender) userToUpdate.gender = gender;
             if (phoneNumber) userToUpdate.phoneNumber = phoneNumber;
-            if (email) userToUpdate.email = email;
+            if (email && email !== userToUpdate.email) {
+                const emailExists = await studAdminModel.findOne({ email });
+                if (emailExists) {
+                    return res.status(400).send({ msg: "Email already in use" });
+                }
+                userToUpdate.email = email;
+            }
 
-            // Handle password change if requested
+            // Handle password change if requested  
             if (password || confirmPassword) {
                 if (password !== confirmPassword) {
                     return res.status(400).send({ msg: "Passwords do not match" });
@@ -127,7 +143,7 @@ const studAdminController = {
             }
 
             await userToUpdate.save();
-            return res.status(200).send({ msg: "User profile updated successfully" });
+            return res.status(200).send({ msg: "Profile Updated successfully" });
 
         } catch (error) {
             console.error(error);
