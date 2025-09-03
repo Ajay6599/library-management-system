@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { studAdminModel } = require('../Model/stud-admin.model');
 const { blacklists } = require('../blacklists');
-const mongoose = require('mongoose');
 
 const studAdminController = {
     register: (req, res) => {
@@ -49,7 +48,7 @@ const studAdminController = {
 
                     if (result) {
 
-                        let token = jwt.sign({ id: loginUser._id.toString(), email: loginUser.email, role: loginUser.role, borrowedBooks: loginUser.borrowedBooks }, "libManSys", { expiresIn: "1h" });
+                        let token = jwt.sign({ id: loginUser._id, email: loginUser.email, role: loginUser.role, borrowedBooks: loginUser.borrowedBooks }, "libManSys", { expiresIn: "1h" });
 
                         return res.status(200).send({ msg: "Logged in successfully.", authToken: token, id: loginUser._id, name: loginUser.name, phoneNo: loginUser.phoneNumber, gender: loginUser.gender, email: loginUser.email, role: loginUser.role });
 
@@ -117,9 +116,6 @@ const studAdminController = {
         const { name, phoneNumber, email, password, confirmPassword } = req.body;
 
         try {
-            if (!mongoose.Types.ObjectId.isValid(loggedInUser.id)) {
-                return res.status(400).send({ msg: "Invalid User ID format in token" });
-            }
             const userToUpdate = await studAdminModel.findById(loggedInUser.id);
             if (!userToUpdate) {
                 return res.status(404).send({ msg: "User not found" });
