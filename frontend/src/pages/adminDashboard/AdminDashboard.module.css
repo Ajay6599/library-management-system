@@ -116,3 +116,33 @@
 .editDeleteBookBtnContainer > div:nth-child(3) > button:hover > div, .editDeleteUserBtnContainer > div:last-child > button:hover > div {
     color: #ff0000;
 }
+
+/* Update Btn */
+.updateBtnContainer > button:first-child {
+    border: 2px solid transparent;
+    /* width: 100%; */
+    padding: 0 1rem;
+    background-color: #a9a9a9;
+    color: #fff;
+    transition: all 0.5s ease-in-out;
+}
+.updateBtnContainer > button:last-child {
+    border: 2px solid transparent;
+    /* width: 100%; */
+    padding: 0 1rem;
+    background-color: #009933;
+    color: #fff;
+    transition: all 0.5s ease-in-out;
+}
+.updateBtnContainer > button:first-child:hover {
+    border: 2px solid #a9a9a9;
+    background-color: #fff;
+    color: #000;
+    border-radius: 20px;
+}
+.updateBtnContainer > button:last-child:hover {
+    border: 2px solid #009933;
+    background-color: #fff;
+    color: #000;
+    border-radius: 20px;
+}

@@ -3,7 +3,6 @@ import { Header } from "../header/Header";
 import { ButtonComp } from "../button/ButtonComp";
 import catalogStyle from "./Catalog.module.css";
 import { useEffect, useState } from "react";
-// import { BorrowContext } from "../../context/BorrowContextProvider";
 import { GiReturnArrow } from "react-icons/gi";
 import axios from "axios";
 

@@ -1,14 +1,15 @@
 import { Box, Flex, Image } from "@chakra-ui/react";
 import { logoImg } from "../../assets/Assets";
 import { ButtonComp } from "../button/ButtonComp";
-import { MdDashboard, MdLogout } from "react-icons/md";
+import { MdDashboard, MdLibraryBooks, MdLogout } from "react-icons/md";
 import { SiBookstack } from "react-icons/si";
-import { FaUserPlus, FaUsers } from "react-icons/fa";
+import { FaUser, FaUserPlus, FaUsers } from "react-icons/fa";
 import sideBarStyle from './SideBar.module.css';
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextProvider";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { GrCatalogOption } from "react-icons/gr";
 
 export const SideBar = ({ isSideBarOpen }) => {
 
@@ -72,7 +73,7 @@ export const SideBar = ({ isSideBarOpen }) => {
             >
                 {/* Logo Image */}
                 <Box
-                    // border='1px solid red'
+                // border='1px solid red'
                 >
                     <Image
                         src={logoImg.logoName}
@@ -102,12 +103,14 @@ export const SideBar = ({ isSideBarOpen }) => {
                     />
                     {
                         role === 'Student' && (
-                            <ButtonComp
-                                text='Borrowed Books'
-                                icon={<MdDashboard size='18' />}
-                                clickHandler={() => componentHandler('Borrowed Books')}
-                                isActive={component === 'Borrowed Books'}
-                            />
+                            <>
+                                <ButtonComp
+                                    text='Borrowed Books'
+                                    icon={<MdLibraryBooks size='18' />}
+                                    clickHandler={() => componentHandler('Borrowed Books')}
+                                    isActive={component === 'Borrowed Books'}
+                                />
+                            </>
                         )
                     }
 
@@ -116,7 +119,7 @@ export const SideBar = ({ isSideBarOpen }) => {
                             <>
                                 <ButtonComp
                                     text='Catalog'
-                                    icon={<MdDashboard size='18' />}
+                                    icon={<GrCatalogOption size='18' />}
                                     clickHandler={() => componentHandler('Catalog')}
                                     isActive={component === 'Catalog'}
                                 />
@@ -135,6 +138,12 @@ export const SideBar = ({ isSideBarOpen }) => {
                             </>
                         )
                     }
+                    <ButtonComp
+                        text='Profile'
+                        icon={<FaUser size='18' />}
+                        clickHandler={() => componentHandler('Profile')}
+                        isActive={component === 'Profile'}
+                    />
                 </Flex>
             </Flex>
 

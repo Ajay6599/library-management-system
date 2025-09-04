@@ -1,4 +1,4 @@
-import { Avatar, Box, Divider, Flex, Grid, Heading, IconButton, Image, ListItem, Stack, Text, Tooltip, UnorderedList } from "@chakra-ui/react";
+import { Avatar, Box, Divider, Flex, Grid, Heading, IconButton, Image, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react";
 import { Header } from "../../components/header/Header";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { FaUsers } from "react-icons/fa";
 import { GiClick } from "react-icons/gi";
 import { logoImg } from "../../assets/Assets";
 import { AuthContext } from "../../context/AuthContextProvider";
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 export const AdminDashboard = () => {
 
@@ -16,8 +17,8 @@ export const AdminDashboard = () => {
     let [usersCount, setUsersCount] = useState(0);
     let [adminCount, setAdminCount] = useState(0);
 
-    let [borrowedAngle, setBorrowedAngle] = useState(0);
-    let [returnedAngle, setReturnedAngle] = useState(0);
+    let [borrowedBook, setBorrowedBook] = useState(0);
+    let [returnedBook, setReturnedBook] = useState(0);
 
     let dashboardText = [
         {
@@ -52,8 +53,6 @@ export const AdminDashboard = () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-
-            // console.log(res.data.borrowedBooks);
             setAllBookBorrowed(res.data.borrowedBooks);
         } catch (error) {
             console.log(error);
@@ -75,8 +74,6 @@ export const AdminDashboard = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-
-            // console.log("users", res.data.AllStudents);
             setUsersCount(res.data.AllStudents.filter(userRole => userRole.role === 'Student').length);
             setAdminCount(res.data.AllStudents.filter(userRole => userRole.role === 'Admin').length);
         } catch (error) {
@@ -90,36 +87,20 @@ export const AdminDashboard = () => {
     }, []);
 
     useEffect(() => {
-        const returnBook = allBookBorrowed.filter(rb => rb.returnDate !== null);
-        const noReturnBook = allBookBorrowed.filter(nrb => nrb.returnDate === null);
+        const borrowed = allBookBorrowed.filter(rb => rb.returnDate !== null).length;
+        const returned = allBookBorrowed.filter(nrb => nrb.returnDate === null).length;
 
-        const total = returnBook.length + noReturnBook.length;
-        console.log("totalBook", total);
-        if (total > 0) {
-            const borrowedPercent = (noReturnBook.length / total) * 100;
-            const returnedPercent = (returnBook.length / total) * 100;
+        setBorrowedBook(borrowed)
+        setReturnedBook(returned);
 
-            // Convert to angles for pie chart
-            setBorrowedAngle((borrowedPercent / 100) * 360);
-            setReturnedAngle((returnedPercent / 100) * 360);
-        }
     }, [allBookBorrowed]);
 
-    let background = '';
+    const chartData = [
+        { name: 'Borrowed', value: borrowedBook },
+        { name: 'Returned', value: returnedBook }
+    ];
 
-    if (returnedAngle === 360) {
-        background = `conic-gradient(#a9a9a9 0deg 360deg)`; // All returned
-    } else if (borrowedAngle === 360) {
-        background = `conic-gradient(#000000 0deg 360deg)`; // All borrowed
-    } else if (returnedAngle === 0 && borrowedAngle === 0) {
-        background = `#e0e0e0`; // No data fallback
-    } else {
-        background = `conic-gradient(
-        #a9a9a9 0deg ${returnedAngle}deg,
-        #000000 ${returnedAngle}deg ${returnedAngle + borrowedAngle}deg,
-        #e0e0e0 ${returnedAngle + borrowedAngle}deg 360deg
-    )`;
-    }
+    const COLORS = ['#111', '#fff'];
 
     return (
         <Stack
@@ -180,7 +161,7 @@ export const AdminDashboard = () => {
                                 gap='0.25rem'
                             >
                                 <Box
-                                    bgColor='#e0e0e0'
+                                    bgColor='#fff'
                                     h='8px'
                                     w='24px'
                                 ></Box>
@@ -193,65 +174,24 @@ export const AdminDashboard = () => {
                         </Flex>
 
                         {/* PieChart */}
-                        <Flex
-                            border='1px solid'
-                            w='240px'
-                            h='240px'
-                            rounded='full'
-                            justifyContent='center'
-                            // bg={`conic-gradient(#fff ${borrowedAngle}deg, #000 ${borrowedAngle}deg ${borrowedAngle + returnedAngle}deg, #ccc ${borrowedAngle + returnedAngle}deg)`}
-                            bg={background}
-                            pos='relative'
-                        >
-                            {/* <Tooltip label='Returned'>
-                                <Box
-                                    border='1px solid green'
-                                    h='50%'
-                                    pos='absolute'
-                                ></Box>
-                            </Tooltip>
-                            <Tooltip label='Borrowed'>
-                                <Box
-                                    border='1px solid red'
-                                    h='50%'
-                                    pos='absolute'
-                                    transform={`rotate(${borrowedAngle}deg)`}
-                                    transformOrigin='center bottom'
-                                ></Box>
-                            </Tooltip> */}
-
-                            {borrowedAngle > 0 && (
-                                <Tooltip label={`Borrowed: ${allBookBorrowed.filter(b => b.returnDate === null).length}`}>
-                                    <Box
-                                        pos="absolute"
-                                        top="0"
-                                        left="0"
-                                        w="100%"
-                                        h="100%"
-                                        rounded="full"
-                                        transform={`rotate(${borrowedAngle / 2}deg)`}
-                                        transformOrigin="center"
-                                        cursor="pointer"
-                                    />
-                                </Tooltip>
-                            )}
-
-                            {returnedAngle > 0 && (
-                                <Tooltip label={`Returned: ${allBookBorrowed.filter(b => b.returnDate !== null).length}`}>
-                                    <Box
-                                        pos="absolute"
-                                        top="0"
-                                        left="0"
-                                        w="100%"
-                                        h="100%"
-                                        rounded="full"
-                                        transform={`rotate(${borrowedAngle + returnedAngle / 2}deg)`}
-                                        transformOrigin="center"
-                                        cursor="pointer"
-                                    />
-                                </Tooltip>
-                            )}
-                        </Flex>
+                        <ResponsiveContainer width='100%' height={250}>
+                            <PieChart>
+                                <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={100} fill="#8884d8">
+                                    {
+                                        chartData.map((entry, index) => (
+                                            <Cell key={`cell-${entry.name}`} fill={COLORS[index % COLORS.length]} />
+                                        ))
+                                    }
+                                </Pie>
+                                <RechartsTooltip
+                                    contentStyle={{
+                                        padding: '0 6px',
+                                        fontSize: '12px',
+                                        top: '0',
+                                    }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </Flex>
 
                     <Flex

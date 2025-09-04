@@ -65,8 +65,7 @@ export const AddUserAdmin = () => {
             try {
                 // let res = await axios.post(`http://localhost:8080/users/register`, userInfo);
                 let res = await axios.post(`${process.env.REACT_APP_API_URL}/users/register`, userInfo);
-                // console.log(res.data);
-                // console.log('Form submitted successfully', userInfo);
+                
                 setUserInfo({
                     name: '',
                     gender: '',
@@ -76,7 +75,7 @@ export const AddUserAdmin = () => {
                     confirmPassword: ''
                 })
                 toast({
-                    title: 'You have created account',
+                    title: 'User Added Successfully',
                     description: res.data.msg,
                     status: 'success',
                     duration: 5000,

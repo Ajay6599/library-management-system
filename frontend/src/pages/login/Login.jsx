@@ -84,7 +84,6 @@ export const Login = () => {
             setErrors({
                 email: false,
                 password: true,
-                // passwordMessage: errMsg.includes('Invalid') ? 'Invalid email or password.' : errMsg,
                 passwordMessage: errMsg
             });
 

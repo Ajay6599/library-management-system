@@ -1,201 +1,311 @@
-import { Box, Checkbox, Divider, Flex, FormControl, FormLabel, Grid, Image, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react";
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContextProvider";
+import { Box, Flex, FormControl, FormLabel, Grid, Heading, Input, InputGroup, InputRightElement, Stack, Text, useBoolean, useToast } from "@chakra-ui/react";
+import { Header } from "../header/Header";
 import { ButtonComp } from "../button/ButtonComp";
-import { MdDelete, MdEdit } from "react-icons/md";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import adminStyle from "../../pages/adminDashboard/AdminDashboard.module.css";
+import { FaRegEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
+import axios from 'axios';
+import addUserAdminStyle from '../addUserAdmin/AddUserAdmin.module.css'
+import { LoadingIndicator } from "../loaderIndicator/LoadingIndicator";
 
 export const Profile = () => {
+    let [isShow, setIsShow] = useBoolean();
+    let [isConfirm, setIsConfirm] = useBoolean();
+    let [isLoading, setIsLoading] = useState(false);
 
-    let { userDetails } = useContext(AuthContext);
+    const storedUserDetails = localStorage.getItem('userDetails');
+    const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : {};
 
-    let { isOpen: isUpdatedModel, onOpen: openUpdateModel, onClose: closeUpdatedModel } = useDisclosure();
+    let [updateInfo, setUpdateInfo] = useState({
+        name: userDetails.name || '',
+        phoneNumber: userDetails.phoneNo || '',
+        email: userDetails.email || '',
+        password: '',
+        confirmPassword: ''
+    });
 
-    const [show, setShow] = useState(false);
-    const [confirmShow, setConfirmShow] = useState(false);
+    const handlerInputChange = (e) => {
+        const { id, value } = e.target;
 
-    let [name, setName] = useState("");
-    let [gender, setGender] = useState("");
-    let [phoneNumber, setPhoneNumber] = useState("");
-    let [email, setEmail] = useState("");
-    let [password, setPassword] = useState("");
-    let [confirmPassword, setConfirmPassword] = useState("");
-
-    const genderHandler = (value) => {
-
-        console.log(value);
-
-        if (gender === value) {
-            setGender('');
-        } else {
-            setGender(value);
-        }
+        setUpdateInfo(prevInfo => ({
+            ...prevInfo,
+            [id]: value
+        }));
     };
 
-    // let toast = useToast();
+    let toast = useToast();
 
-    const onSubmit = () => {
+    const updateProfile = async (e) => {
+        e.preventDefault();
 
-        if (!name || !gender || !phoneNumber || !email || !password || !confirmPassword) {
-            alert('Please fill in all fields!');
-            return;
+        const updatedData = { ...updateInfo };
+
+        // Remove password fields if they are empty
+        if (!updatedData.password) delete updatedData.password;
+        if (!updatedData.confirmPassword) delete updatedData.confirmPassword;
+
+        setIsLoading(true);
+
+        try {
+            let token = localStorage.getItem("authToken");
+            //     // let res = await axios.put(`http://localhost:8080/users/${userToUpdated._id}`, userVal, {
+            //     headers: {
+            //         Authorization: `bearer ${token}`
+            //     }
+            // });
+
+            let res = await axios.put(`${process.env.REACT_APP_API_URL}/users/me`, updatedData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            // console.log(res.data);
+
+            toast({
+                title: 'Profile Updated',
+                description: res.data.msg,
+                status: 'success',
+                duration: 5000,
+                isClosable: true
+            });
+
+        } catch (error) {
+            const errorMsg = error?.response?.data?.msg || "Something went wrong. Please try again.";
+            toast({
+                title: "Profile Updated Failed",
+                description: errorMsg,
+                status: "error",
+                duration: 5000,
+                isClosable: true
+            });
+        } finally {
+            setIsLoading(false);
         }
-
-        // try {
-        //     let res = await axios.post(`http://localhost:8080/users/register`, {
-        //         name,
-        //         gender,
-        //         phoneNumber,
-        //         email,
-        //         password,
-        //         confirmPassword
-        //     });
-        //     console.log(res.data);
-        //     if (password !== confirmPassword) {
-        //         toast({
-        //             title: 'Account Not Created.',
-        //             description: res.data.msg,
-        //             status: 'error',
-        //             duration: 5000,
-        //             isClosable: true,
-        //         });
-        //         console.log(email, gender, phoneNumber, name, password, confirmPassword);
-        //     } else {
-        //         toast({
-        //             title: 'Account Created.',
-        //             description: res.data.msg,
-        //             status: 'success',
-        //             duration: 5000,
-        //             isClosable: true,
-        //         });
-        //         console.log(email, gender, phoneNumber, name, password, confirmPassword);
-        //         setName("");
-        //         setGender("");
-        //         setPhoneNumber("");
-        //         setEmail("");
-        //         setPassword("");
-        //         setConfirmPassword("");
-        //         navigate('/login');
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        //     toast({
-        //         title: 'Something Went Wrong',
-        //         description: error.msg,
-        //         status: 'error',
-        //         duration: 5000,
-        //         isClosable: true,
-        //     });
-        // }
-
-        console.log(email, gender, phoneNumber, name, password, confirmPassword);
     };
-
     return (
-        <Flex border='1px solid white' h='100%' flexDir='column' justifyContent='space-evenly' alignItems='center'>
-            <Box className={adminStyle.detailsContainer}>
-                <Text fontSize='xl' color='#CD2571'>Name: <span>{userDetails.name}</span></Text>
-                <Text fontSize='xl' color='#CD2571'>Email: <span>{userDetails.email}</span></Text>
-                <Text fontSize='xl' color='#CD2571'>Gender: <span>{userDetails.gender}</span></Text>
-                <Text fontSize='xl' color='#CD2571'>Mobile Number: <span>{userDetails.phoneNo}</span></Text>
-            </Box>
-            <Flex border='1px solid red' gap='4rem'>
-                <Box className={adminStyle.editBtnContainer}>
-                    <ButtonComp text='Edit' icon={<MdEdit size='20' />} clickHandler={openUpdateModel} />
+        <Stack
+            bgColor='transparent'
+            ml={['0px', '0px', '220px', '220px']}
+            pos='relative'
+        // border='1px solid green'
+        >
+            <Header />
 
-                    {/* Update Model */}
-                    <Modal isOpen={isUpdatedModel} onClose={closeUpdatedModel}>
-                        <ModalOverlay />
-                        <ModalContent
-                            bgColor='#303030'
-                            color='white'
-                            minW='40%'
+            <Flex
+                // border='2px solid teal'
+                flexDir='column'
+                gap='1rem'
+                m='4rem 0.5rem 0'
+            >
+                <Heading
+                    // border='1px solid red'
+                    w='100%'
+                    fontSize='2xl'
+                    fontWeight='700'
+                    p='2px 0'
+                    bg='linear-gradient(#5B35A4, #3778CC)'
+                    bgClip='text'
+                    color='transparent'
+                >
+                    Profile
+                </Heading>
+
+                {
+                    isLoading ? (
+                        <Flex
+                            position="fixed"
+                            top="0"
+                            left="0"
+                            w="100vw"
+                            h="100vh"
+                            bg="rgba(255, 255, 255, 0.7)"
+                            alignItems="center"
+                            justifyContent="center"
+                            zIndex="overlay"
                         >
-                            <ModalHeader
-                                border='1px solid red'
-                                justifyItems='center'
+                            <LoadingIndicator />
+                        </Flex>
+                    ) : (
+                        <FormControl
+                            // border='1px solid green'
+                            borderRadius='md'
+                            bgColor='#fff'
+                            w={['100%', '100%', '100%', '72%']}
+                            p='1rem'
+                            display='flex'
+                            flexDir='column'
+                            gap='0.75rem'
+                            boxShadow='0 0 2px 1px #696969'
+                            as='form'
+                            onSubmit={updateProfile}
+                        >
+
+                            {/* For Name Input Field */}
+                            <Grid
+                                templateColumns={['1fr', '1fr', '1fr 2fr', '1fr 2fr']}
+                                alignItems='center'
                             >
-                                <Image
-                                    src='https://cdn-icons-png.freepik.com/256/7767/7767245.png?ga=GA1.1.1611507755.1735198847&semt=ais_hybrid'
-                                    alt='Logo'
-                                    w='40px'
-                                />
-                                <Text
-                                    fontWeight='light'
+                                <FormLabel htmlFor="name">
+                                    Name
+                                </FormLabel>
+                                <Flex
+                                    flexDir='column'
                                 >
-                                    Edit Profile
-                                </Text>
-                            </ModalHeader>
+                                    <Input
+                                        id='name'
+                                        type="text"
+                                        p='0.5rem'
+                                        borderColor='#202020'
+                                        focusBorderColor='#202020'
+                                        _hover={{
+                                            borderColor: '#202020'
+                                        }}
+                                        autoComplete='off'
+                                        value={updateInfo.name}
+                                        onChange={handlerInputChange}
+                                    />
+                                </Flex>
+                            </Grid>
 
-                            <ModalBody border='1px solid red' pl='6px' pr='6px'>
+                            {/* For Mobile Number Input Field */}
+                            <Grid
+                                templateColumns={['1fr', '1fr', '1fr 2fr', '1fr 2fr']}
+                                alignItems='center'
+                            >
+                                <FormLabel htmlFor="phoneNumber">
+                                    Mobile No.
+                                </FormLabel>
+                                <Flex
+                                    flexDir='column'
+                                >
+                                    <Input
+                                        id='phoneNumber'
+                                        type="tel"
+                                        p='0.5rem'
+                                        borderColor='#202020'
+                                        focusBorderColor='#202020'
+                                        _hover={{
+                                            borderColor: '#202020'
+                                        }}
+                                        autoComplete='off'
+                                        maxLength='10'
+                                        value={updateInfo.phoneNumber}
+                                        onChange={handlerInputChange}
+                                    />
+                                </Flex>
+                            </Grid>
 
-                                <FormControl border='1px solid #d3d3d3' rounded='md' p='10px' display='flex' flexDir='column' gap='16px' w='100%' isRequired>
+                            {/* For Email Input Field */}
+                            <Grid
+                                templateColumns={['1fr', '1fr', '1fr 2fr', '1fr 2fr']}
+                                alignItems='center'
+                            >
+                                <FormLabel htmlFor="email">
+                                    Email
+                                </FormLabel>
+                                <Flex
+                                    flexDir='column'
+                                >
+                                    <Input
+                                        id='email'
+                                        type="email"
+                                        p='0.5rem'
+                                        borderColor='#202020'
+                                        focusBorderColor='#202020'
+                                        _hover={{
+                                            borderColor: '#202020'
+                                        }}
+                                        autoComplete='off'
+                                        value={updateInfo.email}
+                                        onChange={handlerInputChange}
+                                    />
+                                </Flex>
+                            </Grid>
 
-                                    <Grid templateColumns='1fr 2fr' alignItems='center' mt='10px'>
+                            {/* For Password Input Field */}
+                            <Grid
+                                templateColumns={['1fr', '1fr', '1fr 2fr', '1fr 2fr']}
+                                alignItems='center'
+                            >
+                                <FormLabel htmlFor="password">
+                                    Password
+                                </FormLabel>
+                                <Flex
+                                    flexDir='column'
+                                >
+                                    <InputGroup>
+                                        <Input
+                                            id='password'
+                                            type={isShow ? 'text' : 'password'}
+                                            p='0.5rem'
+                                            borderColor='#202020'
+                                            focusBorderColor='#202020'
+                                            _hover={{
+                                                borderColor: '#202020'
+                                            }}
+                                            autoComplete='off'
+                                            value={updateInfo.password}
+                                            onChange={handlerInputChange}
+                                        />
 
-                                        <FormLabel htmlFor="name" mt='1'>Name</FormLabel>
-                                        <Input id="name" type="text" p='0 10px' autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} />
+                                        <InputRightElement className={addUserAdminStyle.eyeBtn}>
+                                            <ButtonComp icon={isShow ? <FaRegEye /> : <FaEyeSlash />} clickHandler={setIsShow.toggle} />
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </Flex>
+                            </Grid>
 
-                                    </Grid>
+                            {/* For Confirm Password Input Field */}
+                            <Grid
+                                templateColumns={['1fr', '1fr', '1fr 2fr', '1fr 2fr']}
+                                alignItems='center'
+                            >
+                                <FormLabel htmlFor="confirmPassword">
+                                    Confirm Password
+                                </FormLabel>
+                                <Flex
+                                    flexDir='column'
+                                >
+                                    <InputGroup>
+                                        <Input
+                                            id='confirmPassword'
+                                            type={isConfirm ? 'text' : 'password'}
+                                            p='0.5rem'
+                                            borderColor='#202020'
+                                            focusBorderColor='#202020'
+                                            _hover={{
+                                                borderColor: '#202020'
+                                            }}
+                                            autoComplete='off'
+                                            value={updateInfo.confirmPassword}
+                                            onChange={handlerInputChange}
+                                        />
 
-                                    <Grid templateColumns='1fr 2fr' alignItems='center'>
-                                        <FormLabel htmlFor="gender" mt='1'>Gender</FormLabel>
-                                        <Flex gap='1.25rem' mb='1'>
-                                            <Checkbox value="Male" colorScheme="green" isChecked={gender === 'Male'} onChange={(e) => genderHandler(e.target.value)}>Male</Checkbox>
-                                            <Checkbox value="Female" colorScheme="green" isChecked={gender === 'Female'} onChange={(e) => genderHandler(e.target.value)}>Female</Checkbox>
-                                            <Checkbox value="Other" colorScheme="green" isChecked={gender === 'Other'} onChange={(e) => genderHandler(e.target.value)}>Other</Checkbox>
-                                        </Flex>
-                                    </Grid>
+                                        <InputRightElement className={addUserAdminStyle.eyeBtn}>
+                                            <ButtonComp icon={isConfirm ? <FaRegEye /> : <FaEyeSlash />} clickHandler={setIsConfirm.toggle} />
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </Flex>
+                            </Grid>
 
-                                    <Grid templateColumns='1fr 2fr' alignItems='center'>
-                                        <FormLabel htmlFor="phone" mt='1'>Mobile No.</FormLabel>
-                                        <Input id="phone" type="tel" p='0 10px' maxLength={10} autoComplete="off" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-                                    </Grid>
+                            {/* For Submit Button */}
+                            <Box
+                                className={addUserAdminStyle.addUser}
+                                textAlign='center'
+                            >
+                                <ButtonComp type='submit' text='Update Profile' />
+                            </Box>
 
-                                    <Grid templateColumns='1fr 2fr' alignItems='center'>
-                                        <FormLabel htmlFor="email" mt='1'>Email</FormLabel>
-                                        <Input id="email" type="email" p='0 10px' autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                    </Grid>
-
-                                    <Grid templateColumns='1fr 2fr' alignItems='center'>
-                                        <FormLabel htmlFor="password" mt='1'>Password</FormLabel>
-                                        <InputGroup>
-                                            <Input id="password" type={show ? "text" : "password"} p='0 10px' autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                            <InputRightElement className={adminStyle.eyeButton}>
-                                                <ButtonComp icon={show ? <FaRegEye /> : <FaRegEyeSlash />} clickHandler={() => setShow(!show)} />
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    </Grid>
-
-                                    <Grid templateColumns='1fr 2fr' alignItems='center'>
-                                        <FormLabel htmlFor="confirmPass" mt='1'>Confirm Password</FormLabel>
-                                        <InputGroup>
-                                            <Input id="confirmPass" type={confirmShow ? "text" : "password"} p='0 10px' autoComplete="off" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                                            <InputRightElement className={adminStyle.eyeButton}>
-                                                <ButtonComp icon={confirmShow ? <FaRegEye /> : <FaRegEyeSlash />} clickHandler={() => setConfirmShow(!confirmShow)} />
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    </Grid>
-
-                                    <Grid className={adminStyle.loginBtn} templateColumns='1fr' justifyItems='center'>
-                                        <ButtonComp type='submit' text='SUBMIT' clickHandler={onSubmit} />
-                                    </Grid>
-
-                                    <Divider />
-
-                                    <Text fontSize='sm' textAlign='center'>
-                                        &copy; {new Date().getFullYear()} Library Management System. All rights reserved.
-                                    </Text>
-                                </FormControl>
-                            </ModalBody>
-                        </ModalContent>
-                    </Modal>
-                </Box>
-                <Box className={adminStyle.delBtnContainer}>
-                    <ButtonComp text='Delete Account' icon={<MdDelete size='20' />} />
-                </Box>
+                            <Text
+                                textAlign='center'
+                                fontSize='sm'
+                            >
+                                &copy; {new Date().getFullYear()} Library Management System. All rights reserved.
+                            </Text>
+                        </FormControl>
+                    )
+                }
             </Flex>
-        </Flex>
+        </Stack>
     );
 };

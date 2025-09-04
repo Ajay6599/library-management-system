@@ -1,33 +1,23 @@
-import { Box, Flex, Grid, Heading, Input, Stack, Table, Tbody, Td, Th, Thead, Tooltip, Tr, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Divider, Flex, FormControl, FormLabel, Grid, Heading, Input, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Stack, Table, Tbody, Td, Th, Thead, Tooltip, Tr, useDisclosure, useToast } from "@chakra-ui/react";
 import { ButtonComp } from "../button/ButtonComp";
 import { MdDelete, MdEdit } from "react-icons/md";
 import adminStyle from "../../pages/adminDashboard/AdminDashboard.module.css";
 import { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import { LoadingIndicator } from "../loaderIndicator/LoadingIndicator";
-import { StudModal } from "../studModal/StudModal";
 import { Header } from "../header/Header";
 
 export const Users = () => {
 
-    const studTableHead = ["Sr. No.", "Name", "Email", "Role", "No. of Books Borrowed","Registered On", "Action"];
+    const studTableHead = ["Sr. No.", "Name", "Email", "Role", "No. of Books Borrowed", "Registered On", "Action"];
 
     let { isOpen, onOpen, onClose } = useDisclosure();
 
-    let [operationType, setOperationType] = useState('');
+    let [selectedUserId, setSelectedUserId] = useState(null);
+    let [role, setRole] = useState('User');
 
-    let [selectedUser, setSelectedUser] = useState(null);
-
-    const openModal = (opr, user = null) => {
-        // console.log(opr, book);
-
-        console.log("first console", operationType, selectedUser);
-
-        setOperationType(opr);
-        setSelectedUser(user);
-
-        // console.log("sec console", operationType, selectedUser);
-
+    const openModal = (userId) => {
+        setSelectedUserId(userId);
         onOpen();
     };
 
@@ -104,19 +94,44 @@ export const Users = () => {
 
     let toast = useToast();
 
-    // Adding Book API hit
+    // Updating User Role Api hit 
+    const onHandlerUpdateUser = async () => {
+        let token = localStorage.getItem('authToken');
+        try {
+            // let res = await axios.put(`http://localhost:8080/users/${userToUpdated._id}`, userVal, {
+            //     headers: {
+            //         Authorization: `bearer ${token}`
+            //     }
+            // });
 
-    const onHandlerAddUser = () => {
-        fetchUserDetails();
+            let res = await axios.put(`${process.env.REACT_APP_API_URL}/users/${selectedUserId}`, { role: role }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            onClose();
+
+            fetchUserDetails();
+            toast({
+                title: 'User Role Update',
+                description: res.data.msg,
+                status: 'success',
+                duration: 5000,
+                isClosable: true
+            });
+        } catch (error) {
+            toast({
+                title: 'User Role Not Updated',
+                description: error.response.data.msg,
+                status: 'error',
+                duration: 5000,
+                isClosable: true
+            });
+        }
     };
 
-    // Updating Book Api hit 
-
-    const onHandlerUpdateUser = () => {
-        fetchUserDetails();
-    };
-
-    // Deleting Book Api hit
+    // Deleting User Api hit
 
     const handlerDeleteUser = async (userId) => {
 
@@ -244,120 +259,190 @@ export const Users = () => {
 
                             </Grid>
 
-                            <Box
-                                // border='1px solid cyan'
-                                h='79vh'
-                                overflow='auto'
-                                css={{
-                                    "&::-webkit-scrollbar": {
-                                        width: "6px",
-                                        height: "4px",
-                                    },
-                                    "&::-webkit-scrollbar-thumb": {
-                                        backgroundColor: "#101010",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                    },
-                                }}
-                            >
-                                <Table
-                                    variant='striped'
-                                    colorScheme="white"
-                                >
-                                    <Thead
-                                        backgroundColor='#101010'
-                                        pos='sticky'
-                                        top='0'
-                                        zIndex='100'
+                            {
+                                filterUsers.length === 0 ? (
+                                    <Heading fontSize='lg'>
+                                        No Users Found
+                                    </Heading>
+                                ) : (
+                                    <Box
+                                        // border='1px solid cyan'
+                                        h='79vh'
+                                        overflow='auto'
+                                        css={{
+                                            "&::-webkit-scrollbar": {
+                                                width: "6px",
+                                                height: "4px",
+                                            },
+                                            "&::-webkit-scrollbar-thumb": {
+                                                backgroundColor: "#101010",
+                                                borderRadius: "6px",
+                                                cursor: "pointer",
+                                            },
+                                        }}
                                     >
-                                        <Tr>
-                                            {
-                                                studTableHead.map((item, idx) => (
-                                                    <Th
-                                                        key={idx + item}
-                                                        color='yellow'
-                                                        fontWeight='500'
-                                                        textAlign='center'
-                                                    >
-                                                        {item}
-                                                    </Th>
-                                                ))
-                                            }
-                                        </Tr>
-                                    </Thead>
-                                    <Tbody
-                                    >
-                                        {
-                                            filterUsers.map(({ _id, name, gender, email, phoneNumber, role, borrowedBooks }, idx) => (
-                                                <Tr
-                                                    key={`${email} + ${idx}`}
-                                                    _hover={{
-                                                        backgroundColor: '#101010',
-                                                        color: '#fff',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >
-                                                    <Td textAlign='center'>{idx + 1}.</Td>
-                                                    {/* <Td textAlign='center'>
+                                        <Table
+                                            variant='striped'
+                                            colorScheme="white"
+                                        >
+                                            <Thead
+                                                backgroundColor='#101010'
+                                                pos='sticky'
+                                                top='0'
+                                                zIndex='100'
+                                            >
+                                                <Tr>
+                                                    {
+                                                        studTableHead.map((item, idx) => (
+                                                            <Th
+                                                                key={idx + item}
+                                                                color='yellow'
+                                                                fontWeight='500'
+                                                                textAlign='center'
+                                                            >
+                                                                {item}
+                                                            </Th>
+                                                        ))
+                                                    }
+                                                </Tr>
+                                            </Thead>
+                                            <Tbody
+                                            >
+                                                {
+                                                    filterUsers.map(({ _id, name, email, role, borrowedBooks }, idx) => (
+                                                        <Tr
+                                                            key={`${email} + ${idx}`}
+                                                            _hover={{
+                                                                backgroundColor: '#101010',
+                                                                color: '#fff',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <Td textAlign='center'>{idx + 1}.</Td>
+                                                            {/* <Td textAlign='center'>
                                                     <Image src={imageUrl} alt='Book Img' w='32px' />
                                                 </Td> */}
-                                                    <Td textAlign='center'>
-                                                        {name}
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        {email}
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        {role}
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        {borrowedBooks.length}
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        02/05/2025
-                                                    </Td>
-                                                    <Td textAlign='center'>
-                                                        <Flex
-                                                            // border='1px solid teal'
-                                                            alignItems='center'
-                                                            justifyContent='space-around'
-                                                            className={adminStyle.editDeleteUserBtnContainer}
-                                                        >
-                                                            <Tooltip
-                                                                label='Update'
-                                                            >
-                                                                <Box>
-                                                                    <ButtonComp
-                                                                        icon={<MdEdit size='20' />}
-                                                                        clickHandler={() => {
-                                                                            openModal('Update User', { _id, name, gender, email, phoneNumber, role });
-                                                                        }}
-                                                                    />
-                                                                </Box>
-                                                            </Tooltip>
+                                                            <Td textAlign='center'>
+                                                                {name}
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                {email}
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                {role}
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                {borrowedBooks.length}
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                02/05/2025
+                                                            </Td>
+                                                            <Td textAlign='center'>
+                                                                <Flex
+                                                                    // border='1px solid teal'
+                                                                    alignItems='center'
+                                                                    justifyContent='space-around'
+                                                                    className={adminStyle.editDeleteUserBtnContainer}
+                                                                >
+                                                                    <Tooltip
+                                                                        label='Update'
+                                                                    >
+                                                                        <Box>
+                                                                            <ButtonComp
+                                                                                icon={<MdEdit size='20' />}
+                                                                                clickHandler={() => {
+                                                                                    openModal(_id);
+                                                                                }}
+                                                                            />
+                                                                        </Box>
+                                                                    </Tooltip>
 
-                                                            <Tooltip label='Delete'>
-                                                                <Box>
-                                                                    <ButtonComp icon={<MdDelete size='20' />} clickHandler={() => handlerDeleteUser(_id)} />
-                                                                </Box>
-                                                            </Tooltip>
-                                                        </Flex>
-                                                    </Td>
-                                                </Tr>
-                                            ))
-                                        }
-                                    </Tbody>
-                                </Table>
-                            </Box>
+                                                                    <Tooltip label='Delete'>
+                                                                        <Box>
+                                                                            <ButtonComp icon={<MdDelete size='20' />} clickHandler={() => handlerDeleteUser(_id)} />
+                                                                        </Box>
+                                                                    </Tooltip>
+                                                                </Flex>
+                                                            </Td>
+                                                        </Tr>
+                                                    ))
+                                                }
+                                            </Tbody>
+                                        </Table>
+                                    </Box>
+                                )
+                            }
 
-                            {/* Create Modal Component */}
+                            {/* Create Update Modal */}
+                            <Modal isOpen={isOpen} onClose={onClose} isCentered>
 
-                            <StudModal
-                                isOpen={isOpen}
-                                onClose={onClose}
-                                onOperation={operationType === 'Add User' ? onHandlerAddUser : onHandlerUpdateUser}
-                                userToUpdated={selectedUser}
-                            />
+                                <ModalOverlay />
+
+                                <ModalContent>
+                                    <ModalHeader
+                                        // border='1px solid green'
+                                        p='0.25rem'
+                                    >
+                                        <Heading fontWeight='semibold' fontSize='xl'>
+                                            Role Update
+                                        </Heading>
+                                    </ModalHeader>
+
+                                    <Divider />
+
+                                    <ModalBody
+                                        // border='1px solid yellow'
+                                        p='0.5rem 0.25rem'
+                                    >
+                                        <FormControl
+                                            // border='1px solid green'
+                                            isRequired
+                                        >
+
+                                            <Grid
+                                                // border='1px solid red'
+                                                templateColumns='1fr 2fr'
+                                                alignItems='center'
+                                                mt='10px'
+                                            >
+                                                <FormLabel
+                                                    htmlFor='role'
+                                                    mt='1'
+                                                >
+                                                    Role
+                                                </FormLabel>
+                                                <Input
+                                                    id='role'
+                                                    type="text"
+                                                    borderColor='#202020'
+                                                    focusBorderColor='#202020'
+                                                    _hover={{
+                                                        borderColor: '#202020'
+                                                    }}
+                                                    p='0 10px'
+                                                    autoComplete="off"
+                                                    value={role}
+                                                    onChange={e => setRole(e.target.value)}
+                                                />
+                                            </Grid>
+
+                                            <Grid
+                                                // border='2px solid red'
+                                                templateColumns='repeat(2, 100px)'
+                                                alignItems='center'
+                                                justifyContent='end'
+                                                gap='2'
+                                                mt='10px'
+                                                className={adminStyle.updateBtnContainer}
+                                            >
+                                                <ButtonComp type='submit' text='Cancel' clickHandler={onClose} />
+                                                <ButtonComp type='submit' text='Update' clickHandler={onHandlerUpdateUser} />
+                                            </Grid>
+
+                                        </FormControl>
+                                    </ModalBody>
+                                </ModalContent>
+                            </Modal>
                         </Flex>
                     </>
                 )

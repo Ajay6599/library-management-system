@@ -23,38 +23,21 @@ export const Books = () => {
 
     let { isOpen: isBorrowModalOpen, onOpen: onBorrowModalOpen, onClose: onBorrowModalClose } = useDisclosure();
 
-    // let [isLoading, setIsLoading] = useState(false);
-
     let [operationType, setOperationType] = useState('');
 
     let [selectedBook, setSelectedBook] = useState(null);
 
     const openModal = (opr, book = null) => {
-        // console.log(opr, book);
-
-        // console.log("first console", operationType, selectedBook);
-
-        // setOperationType(opr);
-        // setSelectedBook(book);
-
-        // console.log("sec console", operationType, selectedBook);
-
-        // onUpdDelOpen();
-
-        // setIsLoading(true);
-
         if (opr === 'Borrow Book') {
             setOperationType(opr);
             setSelectedBook(book);
 
             onBorrowModalOpen();
-            // setIsLoading(false);
         } else {
             setOperationType(opr);
             setSelectedBook(book);
 
             onUpdDelOpen();
-            // setIsLoading(false);
         }
     };
 

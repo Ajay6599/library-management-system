@@ -10,6 +10,7 @@ import { AddUserAdmin } from '../../components/addUserAdmin/AddUserAdmin';
 import { Users } from '../../components/users/Users';
 import { BorrowBook } from '../../components/borrowBook/BorrowBook';
 import { Catalog } from '../../components/catalog/Catalog';
+import { Profile } from '../../components/profile/Profile';
 
 export const Home = () => {
 
@@ -52,6 +53,8 @@ export const Home = () => {
                 return <Users />
             case 'Add New User':
                 return <AddUserAdmin />
+            case 'Profile':
+                return <Profile />
             default:
                 return role === 'Student' ? (
                     <UserDashboard />

@@ -46,9 +46,6 @@ export const BorrowBook = () => {
         fetchBorrowedBooks();
     }, []);
 
-    console.log(userBookBorrowed);
-    console.log('disp', booksDisplay);
-
     return (
         <Stack
             // border='1px solid red'

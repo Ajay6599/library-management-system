@@ -6,14 +6,10 @@ import { useState } from "react";
 
 export const BorrowBookModal = ({ isOpen, onClose, onOperation, bookToBorrow }) => {
 
-    console.log(bookToBorrow);
-
     let [borrowBookData, setBorrowBookData] = useState({
         userEmail: '',
         book_Id: bookToBorrow,
     });
-
-    // let [userEmail, setUserEmail] = useState('');
 
     const borrowInputHandler = (e) => {
         const { value } = e.target;
