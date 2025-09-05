@@ -102,7 +102,7 @@ const studAdminController = {
                 return res.status(400).json({ msg: 'No role provided to update' });
             }
 
-            userToUpdate.role = role;
+            userToUpdate.role = role === 'User' ? 'Student' : 'Admin';
             await userToUpdate.save();
 
             return res.status(200).json({ msg: 'User role updated by admin successfully' });
