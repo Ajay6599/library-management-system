@@ -14,7 +14,7 @@ export const Users = () => {
     let { isOpen, onOpen, onClose } = useDisclosure();
 
     let [selectedUserId, setSelectedUserId] = useState(null);
-    let [role, setRole] = useState('User');
+    let [role, setRole] = useState('Student');
 
     const openModal = (userId) => {
         setSelectedUserId(userId);
