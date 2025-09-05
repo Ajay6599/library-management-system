@@ -87,8 +87,8 @@ export const AdminDashboard = () => {
     }, []);
 
     useEffect(() => {
-        const borrowed = allBookBorrowed.filter(rb => rb.returnDate !== null).length;
-        const returned = allBookBorrowed.filter(nrb => nrb.returnDate === null).length;
+        const borrowed = allBookBorrowed.filter(rb => rb.returnDate === null).length;
+        const returned = allBookBorrowed.filter(nrb => nrb.returnDate !== null).length;
 
         setBorrowedBook(borrowed)
         setReturnedBook(returned);

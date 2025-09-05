@@ -8,7 +8,7 @@ import { PiKeyReturnBold } from "react-icons/pi";
 import { GiClick } from "react-icons/gi";
 import { logoImg } from "../../assets/Assets";
 import userDashboardStyle from './UserDashboard.module.css';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 export const UserDashboard = () => {
 
@@ -197,6 +197,13 @@ export const UserDashboard = () => {
                                         ))
                                     }
                                 </Pie>
+                                <RechartsTooltip
+                                    contentStyle={{
+                                        padding: '0 6px',
+                                        fontSize: '12px',
+                                        top: '0',
+                                    }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
 
