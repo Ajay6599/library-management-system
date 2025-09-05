@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import { Box, Checkbox, Flex, Heading, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { Header } from "../header/Header";
 import { ButtonComp } from "../button/ButtonComp";
 import catalogStyle from "./Catalog.module.css";
@@ -148,6 +148,19 @@ export const Catalog = () => {
                 gap='1rem'
                 m='4rem 0.5rem 0'
             >
+
+                <Heading
+                    // border='1px solid red'
+                    w='100%'
+                    fontSize='2xl'
+                    fontWeight='700'
+                    p='2px 0'
+                    bg='linear-gradient(#5B35A4, #3778CC)'
+                    bgClip='text'
+                    color='transparent'
+                >
+                    Catalog
+                </Heading>
 
                 <Flex
                     // border='1px solid red'
